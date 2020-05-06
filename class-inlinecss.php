@@ -15,9 +15,22 @@ class InlineCSS {
 	private $inline_stack;
 	private $home_url;
 
-	public function __construct() {
+	public function __construct() {}
+
+	public function install() {
+
 		$this->inline_stack = [];
 		$this->home_url     = trailingslashit( get_bloginfo( 'url' ) );
+
+	}
+
+	public static function init() {
+
+		$self = apply_filters( 'inlinecss_instance', new InlineCSS() );
+		$self->install();
+
+		add_action( 'wp_print_styles', array( $self, 'setup_hooks' ) );
+
 	}
 
 	public function setup_hooks() {
@@ -55,7 +68,7 @@ class InlineCSS {
 
 	public function inline_css_stack() {
 
-		$this->inline_stack = apply_filters( 'basetheme__inline_stylesheets', $this->inline_stack );
+		$this->inline_stack = apply_filters( 'inlinecss_stylesheets', $this->inline_stack );
 
 		if ( empty( $this->inline_stack ) ) {
 			return;
@@ -107,8 +120,16 @@ class InlineCSS {
 			}
 			$url = $new_url . '/' . $url;
 
+			while( $backref = strpos( $url, '/../' ) ) {
+				$previous_pos = strrpos( $url, '/', $backref - strlen( $url ) - 1 );
+				if ( $previous_pos <= 0 || $previous_pos === false ) {
+					break;
+				}
+				$url = substr( $url, 0, $previous_pos ) . substr( $url, $backref + 3 );
+			}
+
 			if ( ! isset( $replacements[ $match[1] ] ) ) {
-				$replacements[ $match[1] ] = $url;
+				$replacements[ $match[0] ] = "url($url)";
 			}
 
 		}
