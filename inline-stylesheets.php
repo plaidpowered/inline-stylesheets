@@ -7,7 +7,7 @@
  * Text Domain: inline-stylesheets
  * Version: 1.0.1
  *
- * @package inline_stylesheets
+ * @package PlaidPowered\InlineCSS
  */
 
 namespace PlaidPowered\InlineCSS;
@@ -31,7 +31,7 @@ class Plugin {
 
 	public static function init() {
 
-		$self = apply_filters( 'inlinecss_instance', new InlineCSS() );
+		$self = apply_filters( 'inlinecss_instance', new Plugin() );
 		$self->install();
 
 		add_action( 'wp_print_styles', array( $self, 'setup_hooks' ) );
