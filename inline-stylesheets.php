@@ -31,6 +31,11 @@ class Plugin {
 
 	public static function init() {
 
+		if ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) {
+			// abort!
+			return;
+		}
+
 		$self = apply_filters( 'inlinecss_instance', new Plugin() );
 		$self->install();
 
