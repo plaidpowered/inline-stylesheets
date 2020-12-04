@@ -59,11 +59,19 @@ class Plugin {
 			return $tag;
 		}
 
+		if ( strpos( $href, $this->home_url ) === false ) {
+			return $tag;
+		}
+
 		$url = strpos( $href, $this->home_url );
 		
 		$path = str_replace( $this->home_url, ABSPATH, $href );
 		if ( $qspos = strrpos( $path, '?' ) ) {
 			$path = substr( $path, 0, $qspos );
+		}
+
+		if ( ! file_exists( $path ) ) {
+			return $tag;
 		}
 
 		$this->inline_stack[] = [
@@ -85,6 +93,7 @@ class Plugin {
 		}
 
 		$css = '';
+		$this_url = get_bloginfo( 'url' );
 
 		foreach ( $this->inline_stack as $stylesheet ) {
 
